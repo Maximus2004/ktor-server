@@ -5,6 +5,7 @@ import com.example.database.projects.ProjectDTO
 import com.example.database.projects.Projects
 import com.example.database.projects.Projects.references
 import kotlinx.datetime.toKotlinLocalDate
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.date
@@ -67,6 +68,23 @@ object Jobs : Table("jobs") {
         try {
             transaction {
                 Jobs.selectAll().map {
+                    JobResponse(
+                        jobId = it[jobId],
+                        name = it[name],
+                        description = it[description],
+                        publishDate = it[publishDate],
+                        projectId = it[projectId]
+                    )
+                }
+            }
+        } catch(e: Exception) {
+            listOf()
+        }
+
+    fun fetchJobsBySearchRequest(request: String) =
+        try {
+            transaction {
+                Jobs.selectAll().where { name like "%$request%" }.map {
                     JobResponse(
                         jobId = it[jobId],
                         name = it[name],

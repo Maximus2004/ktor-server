@@ -17,6 +17,14 @@ fun Application.configureJobsRouting() {
         get("/jobs") {
             call.respond(Jobs.fetchAllJobs())
         }
+        get("jobs/search/{request}") {
+            val request = call.parameters["request"]
+            if (request != null) {
+                call.respond(Jobs.fetchJobsBySearchRequest(request))
+            } else {
+                call.respond(HttpStatusCode.BadRequest, "Search request is incorrect")
+            }
+        }
         get("/project/{projectId}/jobs") {
             val projectId = call.parameters["projectId"]
             if (projectId != null) {
